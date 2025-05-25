@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLNonNull, GraphQLFloat, GraphQLString, GraphQLList } from 'graphql';
 import { UUIDType } from './uuid.js';
-import { Context } from './queries.js';
+import { Context } from '../schema.js';
 import { User } from '@prisma/client';
 
 export const UserType = new GraphQLObjectType({
