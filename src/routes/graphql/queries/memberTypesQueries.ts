@@ -1,7 +1,7 @@
-import { GraphQLList, GraphQLString } from 'graphql';
+import { GraphQLList } from 'graphql';
 
 import { Context } from '../schema.js';
-import { MemberType } from '../types/memberType.js';
+import { MemberType, MemberTypeId } from '../types/memberType.js';
 
 export const memberTypesQueries = {
   memberTypes: {
@@ -10,7 +10,7 @@ export const memberTypesQueries = {
   },
   memberType: {
     type: MemberType,
-    args: { id: { type: GraphQLString } },
+    args: { id: { type: MemberTypeId } },
     resolve: async (parent, { id }: { id: string }, { prisma }: Context) =>
       prisma.memberType.findUnique({ where: { id } }),
   },

@@ -13,9 +13,6 @@ export const profileQueries = {
     type: ProfileType,
     args: { id: { type: UUIDType } },
     resolve: async (parent, { id }: { id: string }, { prisma }: Context) =>
-      prisma.profile.findUnique({
-        where: { id },
-        include: { memberType: true },
-      }),
+      prisma.profile.findUnique({ where: { id } }),
   },
 };
