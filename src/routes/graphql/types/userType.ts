@@ -11,7 +11,7 @@ import { User } from '@prisma/client';
 import { ProfileType } from './profileType.js';
 import { PostType } from './postType.js';
 
-export const UserType = new GraphQLObjectType({
+export const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: 'UserType',
   fields: () => ({
     id: { type: new GraphQLNonNull(UUIDType) },
