@@ -33,7 +33,7 @@ export const UserType = new GraphQLObjectType({
         });
       },
     },
-    subscribedToUser: {
+    userSubscribedTo: {
       type: new GraphQLList(UserType),
       resolve: async (parent: User, args, { prisma }: Context) => {
         const authors = await prisma.subscribersOnAuthors.findMany({
@@ -43,7 +43,7 @@ export const UserType = new GraphQLObjectType({
         return authors.map((author) => author.author);
       },
     },
-    userSubscribedTo: {
+    subscribedToUser: {
       type: new GraphQLList(UserType),
       resolve: async (parent: User, args, { prisma }: Context) => {
         const subscribers = await prisma.subscribersOnAuthors.findMany({
