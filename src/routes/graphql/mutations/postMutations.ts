@@ -1,20 +1,20 @@
-import { GraphQLNonNull, GraphQLString, GraphQLBoolean } from 'graphql';
+import { GraphQLNonNull, GraphQLBoolean } from 'graphql';
 
 import { Context } from '../schema.js';
-import { CreatePost, DeletePost, UpdatePost } from '../types/argTypes.js';
+import { CreatePost, DeletePost, ChangePost } from '../types/argTypes.js';
 import { UUIDType } from '../types/uuid.js';
 import { PostType } from '../types/postType.js';
+import { CreatePostInput } from '../types/createPostInput.js';
+import { ChangePostInput } from '../types/changePostInput.js';
 
 export const postMutations = {
   createPost: {
     type: PostType,
     args: {
-      title: { type: new GraphQLNonNull(GraphQLString) },
-      content: { type: new GraphQLNonNull(GraphQLString) },
-      authorId: { type: new GraphQLNonNull(UUIDType) },
+      dto: { type: CreatePostInput },
     },
     resolve: async (parent, args: CreatePost, { prisma }: Context) => {
-      const { title, content, authorId } = args;
+      const { title, content, authorId } = args.dto;
 
       const newPost = await prisma.post.create({
         data: {
@@ -32,20 +32,20 @@ export const postMutations = {
       };
     },
   },
-  updatePost: {
+  changePost: {
     type: PostType,
     args: {
       id: { type: new GraphQLNonNull(UUIDType) },
-      title: { type: GraphQLString },
-      content: { type: GraphQLString },
-      authorId: { type: UUIDType },
+      dto: {
+        type: new GraphQLNonNull(ChangePostInput),
+      },
     },
-    resolve: async (parent, args: UpdatePost, { prisma }: Context) => {
-      const { id, ...data } = args;
+    resolve: async (parent, args: ChangePost, { prisma }: Context) => {
+      const { id, dto } = args;
 
       const updatedPost = await prisma.post.update({
         where: { id },
-        data,
+        data: dto,
       });
 
       return updatedPost;

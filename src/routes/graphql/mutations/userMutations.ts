@@ -1,22 +1,24 @@
-import { GraphQLNonNull, GraphQLString, GraphQLInt, GraphQLBoolean } from 'graphql';
-
+import { GraphQLNonNull, GraphQLBoolean } from 'graphql';
 import { Context } from '../schema.js';
 import { UserType } from '../types/userType.js';
-import { CreateUserArgs, DeleteUserArgs, UpdateUserArgs } from '../types/argTypes.js';
+import { CreateUserArgs, DeleteUserArgs, ChangeUserArgs } from '../types/argTypes.js';
 import { UUIDType } from '../types/uuid.js';
+import { CreateUserInput } from '../types/createUserInput.js';
+import { ChangeUserInput } from '../types/changeUserInput.js';
 
 export const userMutations = {
   createUser: {
     type: UserType,
     args: {
-      name: { type: new GraphQLNonNull(GraphQLString) },
-      balance: { type: new GraphQLNonNull(GraphQLInt) },
+      dto: { type: CreateUserInput },
     },
     resolve: async (parent, args: CreateUserArgs, { prisma }: Context) => {
+      const { name, balance } = args.dto;
+
       const newUser = await prisma.user.create({
         data: {
-          name: args.name,
-          balance: args.balance,
+          name,
+          balance,
         },
       });
 
@@ -27,23 +29,24 @@ export const userMutations = {
       };
     },
   },
-  updateUser: {
+  changeUser: {
     type: UserType,
     args: {
       id: { type: new GraphQLNonNull(UUIDType) },
-      name: { type: GraphQLString },
-      balance: { type: GraphQLInt },
+      dto: {
+        type: new GraphQLNonNull(ChangeUserInput),
+      },
     },
-    resolve: async (parent, args: UpdateUserArgs, { prisma }: Context) => {
-      const { id, ...data } = args;
+    resolve: async (parent, args: ChangeUserArgs, { prisma }: Context) => {
+      const { id, dto } = args;
 
       return prisma.user.update({
         where: { id },
-        data,
+        data: dto,
       });
     },
   },
-  deleteUserType: {
+  deleteUser: {
     type: GraphQLBoolean,
     args: {
       id: { type: new GraphQLNonNull(UUIDType) },

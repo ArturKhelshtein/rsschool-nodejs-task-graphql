@@ -1,22 +1,20 @@
-import { GraphQLNonNull, GraphQLInt, GraphQLBoolean } from 'graphql';
+import { GraphQLNonNull, GraphQLBoolean } from 'graphql';
 
 import { Context } from '../schema.js';
-import { CreateProfile, DeleteProfile, UpdateProfile } from '../types/argTypes.js';
+import { CreateProfile, DeleteProfile, ChangeProfile } from '../types/argTypes.js';
 import { UUIDType } from '../types/uuid.js';
 import { ProfileType } from '../types/profileType.js';
-import { MemberTypeId } from '../types/memberType.js';
+import { CreateProfileInput } from '../types/createProfileInput.js';
+import { ChangeProfileInput } from '../types/changeProfileInput.js';
 
 export const profileMutations = {
   createProfile: {
     type: ProfileType,
     args: {
-      isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
-      yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
-      memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
-      userId: { type: new GraphQLNonNull(UUIDType) },
+      dto: { type: CreateProfileInput },
     },
     resolve: async (parent, args: CreateProfile, { prisma }: Context) => {
-      const { isMale, yearOfBirth, memberTypeId, userId } = args;
+      const { isMale, yearOfBirth, memberTypeId, userId } = args.dto;
 
       const newProfile = await prisma.profile.create({
         data: {
@@ -36,21 +34,20 @@ export const profileMutations = {
       };
     },
   },
-  updateProfile: {
+  changeProfile: {
     type: ProfileType,
     args: {
       id: { type: new GraphQLNonNull(UUIDType) },
-      isMale: { type: GraphQLBoolean },
-      yearOfBirth: { type: GraphQLInt },
-      memberTypeId: { type: MemberTypeId },
-      userId: { type: UUIDType },
+      dto: {
+        type: ChangeProfileInput,
+      },
     },
-    resolve: async (parent, args: UpdateProfile, { prisma }: Context) => {
-      const { id, ...data } = args;
+    resolve: async (parent, args: ChangeProfile, { prisma }: Context) => {
+      const { id, dto } = args;
 
       const updatedProfile = await prisma.profile.update({
         where: { id },
-        data,
+        data: dto,
       });
 
       return updatedProfile;
